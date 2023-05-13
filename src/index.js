@@ -4,6 +4,11 @@ chess board: "Chess Board" (https://skfb.ly/6SAZ9) by danielpaulse is licensed u
 
 */
 
+let maxHeight = 64;
+let worldSize = 160;
+const flatWorld = "25600b102400d1510400a";
+const flatWorldx10 = "2560000b10240000d151040000a"; // way too much to load this
+
 // function to help with radians
 function degToRad(degrees) {
     var radians = degrees * (Math.PI / 180);
@@ -13,7 +18,57 @@ function degToRad(degrees) {
 function copy2DArray(array) {
     return array.map(innerArray => innerArray.slice());
 }
-  
+
+// debugging world in javascript console
+function debugWorld(worldArray) {
+    for (let y = 0; y < maxHeight; y++) {
+        let level = ""
+        for (let x = 0; x < 10; x++) {
+            for (let z = 0; z < 10; z++) {
+                level += worldArray[x][y][z]
+            }
+            level += "\n"
+        }
+        console.log(`level ${y}: \n\n${level}`)
+    }
+}
+
+// loading blocks into a 3d array
+function decodeWorldCode(input) {
+    let world = new Array(worldSize).fill().map(() => new Array(maxHeight).fill().map(() => new Array(worldSize).fill(0)));
+    let x = 0;
+    let y = 0;
+    let z = 0;
+    let index = 0;
+    while (index < input.length) {
+        let numberEnd = index;
+        while (!isNaN(parseInt(input.charAt(numberEnd)))) {
+            numberEnd++;
+        }
+        let count = parseInt(input.substring(index, numberEnd));
+        let blockType = input.charAt(numberEnd);
+        for (let n = 0; n < count; n++) {
+            world[x][y][z] = blockType;
+            z++ 
+            if (z == worldSize) {
+                z = 0;
+                x++;
+                if (x == worldSize) {
+                    x = 0;
+                    y++;
+                    if (y == maxHeight) {
+                        break;
+                    }
+                }
+            }
+        }
+        index = numberEnd + 1;
+    }
+    return world;
+}
+let world = decodeWorldCode(flatWorld);
+debugWorld(world);
+
 /*--------------------------------------- firebase ----------------------------------------*/ 
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
