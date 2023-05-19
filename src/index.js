@@ -1,13 +1,11 @@
 /* 3d model credits:
 
-chess board: "Chess Board" (https://skfb.ly/6SAZ9) by danielpaulse is licensed under Creative Commons Attribution-ShareAlike (http://creativecommons.org/licenses/by-sa/4.0/).
-
 */
 
 let maxHeight = 64;
 let worldSize = 160;
-const flatWorld = "25600b102400d1510400a";
-const flatWorldx10 = "2560000b10240000d151040000a"; // way too much to load this
+const flatWorld = `${160*160}b${160*160*3}s${160*160*3}d${160*160}g${160*160*56}a`;
+//${160*160}g
 
 // function to help with radians
 function degToRad(degrees) {
@@ -31,6 +29,14 @@ function debugWorld(worldArray) {
         }
         console.log(`level ${y}: \n\n${level}`)
     }
+}
+
+const blocks = {
+    "s": "stone",
+    "d": "dirt",
+    "b": "bedrock",
+    "g": "grass",
+    "ol": "oak_log",
 }
 
 // loading blocks into a 3d array
@@ -186,7 +192,6 @@ loginForm.addEventListener('submit', (e) => {
         .then(cred => {
             loginForm.reset()
             userId = cred.user.uid;
-            goToIngameMenu();
          })
         .catch(err => {
             console.log(err.message)
@@ -197,6 +202,7 @@ loginForm.addEventListener('submit', (e) => {
   
 // threejs imports
 import * as THREE from 'three';
+import * as BufferGeometryUtils from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
   
@@ -219,20 +225,8 @@ camera.lookAt(new THREE.Vector3(0, 0, 0));
 const orbit = new OrbitControls(camera, renderer.domElement);
 orbit.update();
   
-class Block {
-    constructor(x,y,z,mesh,piece) {
-        this.mesh = mesh;
-        this.x = r;
-        this.y = y;
-        this.z = z;
-        this.piece = piece;
-    }
-    removePiece() {
-        scene.remove(this.mesh);
-    }
-}
-  
-// board location planes for raycast and game logic
+// raycast
+/*
 var prevClickedMesh;
   
 function onCanvasClick(event) {
@@ -257,12 +251,169 @@ function onCanvasClick(event) {
         }
     }
 }
-  
+*/  
+
 // ambient scene light
-/*
 const ambientLight = new THREE.AmbientLight(0xffffff)
 scene.add(ambientLight);
-*/
+
+const textureLoader = new THREE.TextureLoader();
+const blockGeometry = new THREE.BoxGeometry( 1, 1, 1);
+const startingBlockMaterial = new THREE.MeshStandardMaterial({color: 0xffffff});
+let displayedBlocks = new Array(worldSize).fill().map(() => new Array(maxHeight).fill().map(() => new Array(worldSize).fill(0)));
+let chunkMeshes = new Array(worldSize / 16).fill().map(() => new Array(maxHeight / 16).fill().map(() => new Array(worldSize / 16).fill(null)));
+
+const textures = {
+    "dirt": new THREE.MeshStandardMaterial({map: textureLoader.load("textures/dirt/all.webp")}),
+    "stone": new THREE.MeshStandardMaterial({map: textureLoader.load("textures/stone/all.webp")}),
+    "bedrock": new THREE.MeshStandardMaterial({map: textureLoader.load("textures/bedrock/all.webp")}),
+    "grass": [
+        new THREE.MeshStandardMaterial({
+            map: textureLoader.load("textures/grass/sides.webp")
+        }),
+        new THREE.MeshStandardMaterial({
+            map: textureLoader.load("textures/grass/sides.webp")
+        }),
+        new THREE.MeshStandardMaterial({
+            map: textureLoader.load("textures/grass/top.webp")
+        }),
+        new THREE.MeshStandardMaterial({
+            map: textureLoader.load("textures/grass/bottom.webp")
+        }),
+        new THREE.MeshStandardMaterial({
+            map: textureLoader.load("textures/grass/sides.webp")
+        }),
+        new THREE.MeshStandardMaterial({
+            map: textureLoader.load("textures/grass/sides.webp")
+        }),
+    ],
+    "oak_log": [
+        new THREE.MeshStandardMaterial({
+            map: textureLoader.load("textures/oak_log/sides.webp")
+        }),
+        new THREE.MeshStandardMaterial({
+            map: textureLoader.load("textures/oak_log/sides.webp")
+        }),
+        new THREE.MeshStandardMaterial({
+            map: textureLoader.load("textures/oak_log/top.webp")
+        }),
+        new THREE.MeshStandardMaterial({
+            map: textureLoader.load("textures/oak_log/top.webp")
+        }),
+        new THREE.MeshStandardMaterial({
+            map: textureLoader.load("textures/oak_log/sides.webp")
+        }),
+        new THREE.MeshStandardMaterial({
+            map: textureLoader.load("textures/oak_log/sides.webp")
+        }),
+    ],
+}
+
+function loadChunk(chunkX, chunkY, chunkZ) {
+    let currentWorldBlocks = [];
+    for (let x = chunkX * 16; x < (chunkX * 16) + 16; x++) {
+        for (let y = chunkY * 16; y < (chunkY * 16) + 16; y++) {
+            for (let z = chunkZ * 16; z < (chunkZ * 16) + 16; z++) {
+                if (world[x][y][z] != "a") {
+                    if (y < maxHeight-1) {
+                        if (world[x][y+1][z] == "a") { // add plane above
+                            currentWorldBlocks.push([x,y,z,world[x][y][z]]);
+                            continue;
+                        }
+                    } else {
+                        currentWorldBlocks.push([x,y,z,world[x][y][z]]);
+                        continue;
+                    }
+                    if (y > 0) {
+                        if (world[x][y-1][z] == "a") { // add bottom plane
+                            currentWorldBlocks.push([x,y,z,world[x][y][z]]);
+                            continue;
+                        }
+                    } else {
+                        currentWorldBlocks.push([x,y,z,world[x][y][z]]);
+                        continue;
+                    }
+                    if (x < worldSize-1) {
+                        if (world[x+1][y][z] == "a") { // add side plane x+1
+                            currentWorldBlocks.push([x,y,z,world[x][y][z]]);
+                            continue;
+                        }
+                    } else {
+                        currentWorldBlocks.push([x,y,z,world[x][y][z]]);
+                        continue;
+                    }
+                    if (x > 0) {
+                        if (world[x-1][y][z] == "a") { // add side plane x-1
+                            currentWorldBlocks.push([x,y,z,world[x][y][z]]);
+                            continue;
+                        }
+                    } else {
+                        currentWorldBlocks.push([x,y,z,world[x][y][z]]);
+                        continue;
+                    }
+                    if (z < worldSize-1) {
+                        if (world[x][y][z+1] == "a") { // add side plane z+1
+                            currentWorldBlocks.push([x,y,z,world[x][y][z]]);
+                            continue;
+                        }
+                    } else {
+                        currentWorldBlocks.push([x,y,z,world[x][y][z]]);
+                        continue;
+                    }
+                    if (z > 0) {
+                        if (world[x][y][z-1] == "a") { // add side plane z-1
+                            currentWorldBlocks.push([x,y,z,world[x][y][z]]);
+                            continue;
+                        }
+                    } else {
+                        currentWorldBlocks.push([x,y,z,world[x][y][z]]);
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+    let instanceMeshesNeeded = {}
+    for (let i = 0; i < currentWorldBlocks.length; i++) {
+        if (!(instanceMeshesNeeded.hasOwnProperty(currentWorldBlocks[i][3]))) {
+            instanceMeshesNeeded[currentWorldBlocks[i][3]] = 1;
+        } else {
+            instanceMeshesNeeded[currentWorldBlocks[i][3]]++;
+        }
+    }
+    let chunkInstancedMeshes = []
+    for (let block in instanceMeshesNeeded) {
+        const temp = new THREE.Object3D();
+        let nextInstancedMesh = new THREE.InstancedMesh(blockGeometry, textures[blocks[block]], instanceMeshesNeeded[block]);
+        scene.add(nextInstancedMesh);
+        
+        let instanceIndex = 0; // Create a new index for each block type
+        for (let i = 0; i < currentWorldBlocks.length; i++) {
+            if (currentWorldBlocks[i][3] == block) {
+                temp.position.set(currentWorldBlocks[i][0], currentWorldBlocks[i][1], currentWorldBlocks[i][2]);
+                temp.updateMatrix();
+                nextInstancedMesh.setMatrixAt(instanceIndex, temp.matrix); // Use the new index here
+                instanceIndex++; // Increment the index for each instance
+            }
+        }
+        chunkInstancedMeshes.push(nextInstancedMesh);
+    }    
+}
+
+let counter = 0;
+function enterWorld(world) {
+    for (let x = 0;x < worldSize / 16;x++) {
+        for (let y = 0;y < maxHeight / 16;y++) {
+            for (let z = 0;z < worldSize / 16;z++) {
+                loadChunk(x,y,z);
+                counter++;
+                console.log(`percent loaded: ${counter/((worldSize / 16)**2 * (maxHeight / 16)) * 100}%`);
+            }
+        }
+    }
+}
+
+enterWorld(world);
 
 function animate() {
     renderer.render(scene, camera);
