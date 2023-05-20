@@ -29,14 +29,34 @@ function debugWorld(worldArray) {
         }
         console.log(`level ${y}: \n\n${level}`)
     }
+    for (let y = 0; y < maxHeight; y++) {
+        for (let x = 0; x < worldSize; x++) {
+            for (let z = 0; z < worldSize; z++) {
+                if (blocks[worldArray[x][y][z]] === undefined) {
+                    console.error(`${worldArray[x][y][z]} is not a block type`)
+                }
+            }
+        }
+    }
 }
 
 const blocks = {
+    "a": "air",
     "s": "stone",
     "d": "dirt",
     "b": "bedrock",
     "g": "grass",
     "ol": "oak_log",
+    "gl": "glass",
+}
+const blockKeys = {
+    "air": "a",
+    "stone": "s",
+    "dirt": "d",
+    "bedrock": "b",
+    "grass": "g",
+    "oak_log": "ol",
+    "glass": "gl",
 }
 
 // loading blocks into a 3d array
@@ -52,7 +72,13 @@ function decodeWorldCode(input) {
             numberEnd++;
         }
         let count = parseInt(input.substring(index, numberEnd));
-        let blockType = input.charAt(numberEnd);
+        let blockType = null; 
+        if (isDigit(input[numberEnd+1])) {
+            blockType = input.charAt(numberEnd);
+        } else {
+            blockType = input.charAt(numberEnd) + input.charAt(numberEnd+1);
+            numberEnd++;
+        }
         for (let n = 0; n < count; n++) {
             world[x][y][z] = blockType;
             z++ 
@@ -72,6 +98,114 @@ function decodeWorldCode(input) {
     }
     return world;
 }
+
+function encodeWorldCode() {
+    let output = '';
+    let count = 0;
+    let currentBlock = world[0][0][0];
+    for (let y = 0; y < maxHeight; y++) {
+        for (let x = 0; x < worldSize; x++) {
+            for (let z = 0; z < worldSize; z++) {
+                if (world[x][y][z] == currentBlock) {
+                    count++;
+                } else {
+                    output += count.toString() + currentBlock;
+                    currentBlock = world[x][y][z];
+                    count = 1;
+                }
+            }
+        }
+    }
+    output += count.toString() + currentBlock;
+    return output;
+}
+
+function getNumber(string, currentIndex) {
+    let result = ""
+    for (let i = currentIndex; i < string.length; i++) {
+        if (!(isDigit(string[i]))) {
+            if (result == "") {
+                console.error(
+                    `trying to get a number using the getNumber function but the number is not present at the current index, 
+                    the string you tried to use was ${string} and the starting index of where you looked was ${currentIndex}`
+                )
+            }
+            return [result, i];
+        }
+        result += string[i]
+    }
+}
+
+function isDigit(n) {
+    return /^\d+$/.test(n);
+}
+
+function runCommand(command) {
+    command = command.replace(/\s/g, '');
+    let operation = "";
+    let commandIndex = -1;
+
+    for (let i = 0; i < command.length; i++) {
+        if (command[i] == ":") {
+            commandIndex = i;
+            break;
+        }
+        operation += command[i];
+    }
+
+    if (operation == "fill") {
+        let i = commandIndex + 2;
+        const x1 = getNumber(command, i)[0];
+        i = getNumber(command, i)[1]+1;
+        const y1 = getNumber(command, i)[0];
+        i = getNumber(command, i)[1]+1;
+        const z1 = getNumber(command, i)[0];
+        i = getNumber(command, i)[1]+2;
+        const x2 = getNumber(command, i)[0];
+        i = getNumber(command, i)[1]+1;
+        const y2 = getNumber(command, i)[0];
+        i = getNumber(command, i)[1]+1;
+        const z2 = getNumber(command, i)[0];
+        i = getNumber(command, i)[1]+1;
+        let block = ""
+        for (let j = i; j < command.length; j++) {
+            block += command[j];
+        }
+        fillOperation(x1,y1,z1,x2,y2,z2,blockKeys[block]);
+    } else if (operation == "save") {
+        const saveCode = encodeWorldCode();
+        console.log(`save code is: ${saveCode}`);
+        commandLineInput.value = `save code: ${saveCode}`;
+    } else if (operation == "load") {
+        let loadCode = command.substring(commandIndex + 1);
+        world = decodeWorldCode(loadCode);
+        enterWorld();
+    } else if (operation == "debug") {
+        debugWorld(world);
+    }else {
+        console.error(`operation '${operation}' does not exist`);
+    }
+}
+
+function fillOperation(x1,y1,z1,x2,y2,z2,block) {
+    x1 = parseInt(x1);
+    y1 = parseInt(y1);
+    z1 = parseInt(z1);
+    x2 = parseInt(x2);
+    y2 = parseInt(y2);
+    z2 = parseInt(z2);
+    console.log(`fillOperation x1: ${x1}, y1: ${y1}, z1:${z1}, x2: ${x2}, y2: ${y2}, z2: ${z2}, block: ${block}`);
+    for (let x = x1; x < x2+1; x++) {
+        for (let y = y1; y < y2+1; y++) {
+            for (let z = z1; z < z2+1; z++) {
+                world[x][y][z] = block;
+            }
+        }
+    }
+    enterWorld(world)
+}
+
+
 let world = decodeWorldCode(flatWorld);
 debugWorld(world);
 
@@ -117,7 +251,6 @@ const auth = getAuth();
 var userId = null;
 var opponentName = "carter2"
 var username = null;
-const mainMenuDiv = document.querySelector(".home-menu");
     
 // sign up and login
 var username;
@@ -253,12 +386,37 @@ function onCanvasClick(event) {
 }
 */  
 
+// inventory and comand line elements and login page elements
+const commandLineDiv = document.querySelector(".command-line");
+const commandLineInput = document.querySelector(".command-line input");
+commandLineInput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        runCommand(commandLineInput.value);
+        commandLineInput.value = '';
+    }
+});
+
+const mainMenuDiv = document.querySelector(".main-menu");
+mainMenuDiv.style.display = "none";
+
+// key press event listeners
+document.addEventListener('keydown', function(event) {
+    if (event.key == ';') {
+        if (commandLineDiv.style.display == "flex") {
+            commandLineDiv.style.display = "none";
+        } else {
+            commandLineDiv.style.display = "flex"
+        }
+    }
+});
+
 // ambient scene light
 const ambientLight = new THREE.AmbientLight(0xffffff)
 scene.add(ambientLight);
 
+const blockScale = 1;
 const textureLoader = new THREE.TextureLoader();
-const blockGeometry = new THREE.BoxGeometry( 1, 1, 1);
+const blockGeometry = new THREE.BoxGeometry( blockScale, blockScale, blockScale);
 const startingBlockMaterial = new THREE.MeshStandardMaterial({color: 0xffffff});
 let displayedBlocks = new Array(worldSize).fill().map(() => new Array(maxHeight).fill().map(() => new Array(worldSize).fill(0)));
 let chunkMeshes = new Array(worldSize / 16).fill().map(() => new Array(maxHeight / 16).fill().map(() => new Array(worldSize / 16).fill(null)));
@@ -307,9 +465,15 @@ const textures = {
             map: textureLoader.load("textures/oak_log/sides.webp")
         }),
     ],
+    glass: new THREE.MeshStandardMaterial({map: textureLoader.load("textures/glass/all.webp")}),
 }
 
 function loadChunk(chunkX, chunkY, chunkZ) {
+    if (chunkMeshes[chunkX][chunkY][chunkZ] != null) {
+        for (let i = 0;i < chunkMeshes[chunkX][chunkY][chunkZ].length; i++) {
+            scene.remove(chunkMeshes[chunkX][chunkY][chunkZ][i]);
+        }
+    }
     let currentWorldBlocks = [];
     for (let x = chunkX * 16; x < (chunkX * 16) + 16; x++) {
         for (let y = chunkY * 16; y < (chunkY * 16) + 16; y++) {
@@ -390,30 +554,35 @@ function loadChunk(chunkX, chunkY, chunkZ) {
         let instanceIndex = 0; // Create a new index for each block type
         for (let i = 0; i < currentWorldBlocks.length; i++) {
             if (currentWorldBlocks[i][3] == block) {
-                temp.position.set(currentWorldBlocks[i][0], currentWorldBlocks[i][1], currentWorldBlocks[i][2]);
+                temp.position.set(currentWorldBlocks[i][0]*blockScale, currentWorldBlocks[i][1]*blockScale, currentWorldBlocks[i][2]*blockScale);
                 temp.updateMatrix();
                 nextInstancedMesh.setMatrixAt(instanceIndex, temp.matrix); // Use the new index here
                 instanceIndex++; // Increment the index for each instance
             }
         }
         chunkInstancedMeshes.push(nextInstancedMesh);
-    }    
+    } 
+    chunkMeshes[chunkX][chunkY][chunkZ] = (chunkInstancedMeshes)   
 }
 
 let counter = 0;
-function enterWorld(world) {
+function enterWorld() {
     for (let x = 0;x < worldSize / 16;x++) {
         for (let y = 0;y < maxHeight / 16;y++) {
             for (let z = 0;z < worldSize / 16;z++) {
                 loadChunk(x,y,z);
                 counter++;
-                console.log(`percent loaded: ${counter/((worldSize / 16)**2 * (maxHeight / 16)) * 100}%`);
+                //console.log(`percent loaded: ${counter/((worldSize / 16)**2 * (maxHeight / 16)) * 100}%`);
             }
         }
     }
 }
 
-enterWorld(world);
+enterWorld();
+
+// world background 
+let background_texture = new THREE.TextureLoader().load("sky.png");
+scene.background = background_texture;
 
 function animate() {
     renderer.render(scene, camera);

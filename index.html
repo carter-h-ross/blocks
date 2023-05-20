@@ -197,6 +197,27 @@
             padding:6px;  
             margin-bottom: 10px;
         }
+
+        .main-menu-div.command-line {
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            width: 60%;
+            height: 13.5%;
+            left: 20%; /* To center the div horizontally */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.57);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(12.1px);
+            -webkit-backdrop-filter: blur(12.1px);
+        }
+        .command-line-input {
+            width: 90%; /* To leave some space around the input field */
+        }
+        
     </style>
 
     <div class="main-menu home-menu">
@@ -218,6 +239,11 @@
         </form>
 
     </div>
+
+    <div class="main-menu-div command-line">
+        <input class="main-menu-input command-line-input" type="text" placeholder="Enter command..." />
+    </div>
+    
 
     <canvas id="bg"></canvas>
 
