@@ -5,12 +5,80 @@
 let maxHeight = 64;
 let worldSize = 160;
 const flatWorld = `${160*160}b${160*160*3}s${160*160*3}d${160*160}g${160*160*56}a`;
-//${160*160}g
+const demoWorld = `
+   25600b76800s76800d76g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151
+   g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9
+   d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d1
+   51g9d151g9d151g9d75g1440d76g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d15
+   1g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g
+   9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d151g9d
+   151g9d151g9d151g9d75g1610a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1o
+   l9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a41ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol
+   39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol69a1ol9a1ol9a1ol9a1ol9a1ol9a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1
+   ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol1
+   19a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a1ol119a1ol39a
+   1ol119a1ol39a1ol119a41ol11109a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol
+   9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a41gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119
+   a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl69a1ol9a1ol9a1ol9a1ol9a1ol9a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl1
+   19a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a
+   1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1g
+   l39a1gl119a1gl39a1gl119a41gl11109a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9
+   a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a41gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1g
+   l119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl69a1ol9a1ol9a1ol9a1ol9a1ol9a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a
+   1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1g
+   l39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl11
+   9a1gl39a1gl119a1gl39a1gl119a41gl11109a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a
+   1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1539a1ol9a1ol9a1ol9a1ol9a1ol9a41gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl3
+   9a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl69a1ol9a1ol9a1ol9a1ol9a1ol9a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1g
+   l39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl11
+   9a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1gl119a1gl39a1
+   gl119a1gl39a1gl119a1gl39a1gl119a41gl10837a5ole155a5ole107a1ol9a1ol9a1ol9a1ol9a1ol7a2ole1ol2ole7a1ol147a5ole155a5ole915a5ole45a5ole105a5ole45a5ole97a1ol7
+   a2ole1ol2ole7a1ol9a1ol9a1ol9a1ol7a2ole1ol2ole105a5ole45a5ole105a5ole45a5ole1217a1ol9a1ol9a1ol9a1ol9a1ol9a1ol9a1ol1217a5ole45a5ole105a5ole45a5ole105a2ole
+   1ol2ole7a1ol9a1ol9a1ol9a1ol7a2ole1ol2ole7a1ol97a5ole45a5ole105a5ole45a5ole935a5ole15a5ole5a5ole125a5ole15a5ole5a5ole97a1ol9a1ol9a1ol7a2ole1ol2ole7a1ol7a
+   2ole1ol2ole5a2ole1ol2ole125a5ole15a5ole5a5ole125a5ole15a5ole5a5ole895a5ole15a5ole135a5ole15a5ole135a2ole1ol2ole7a1ol7a2ole1ol2ole7a1ol9a1ol9a41sb67a5ole
+   15a5ole27a41sb67a5ole15a5ole27a41sb119a41sb119a41sb119a41sb119a41sb119a41sb67a5ole47a41sb67a5ole47a41sb67a2ole1ol2ole7a1ol9a1ol9a1ol9a1ol9a41sb67a5ole47
+   a41sb67a5ole47a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a4
+   1sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb119a41sb10787a5ole25a5ole5a5ole5a5ole5a5ole95a5ole25a5ole5a5ole5a5ole
+   5a5ole95a2ole1ol2ole7a1ol9a1ol7a2ole1ol2ole5a2ole1ol2ole5a2ole1a2ole5a2ole1ol2ole95a5ole25a5ole5a5ole5a5ole5a5ole95a5ole25a5ole5a5ole5a5ole5a5ole905a5ol
+   e5a5ole5a5ole5a5ole15a5ole105a5ole5a5ole5a5ole5a5ole15a5ole97a1ol7a2ole1a2ole5a2ole1ol2ole5a2ole1ol2ole5a2ole1ol2ole7a1ol7a2ole1a2ole105a5ole5a5ole5a5ol
+   e5a5ole15a5ole105a5ole5a5ole5a5ole5a5ole15a5ole905a5ole25a5ole15a5ole105a5ole25a5ole15a5ole97a1ol7a2ole1ol2ole7a1ol9a1ol7a2ole1ol2ole7a1ol7a2ole1ol2ole1
+   05a5ole25a5ole15a5ole105a5ole25a5ole15a5ole895a5ole25a5ole5a5ole5a5ole105a5ole25a5ole5a5ole5a5ole105a2ole1a2ole7a1ol9a1ol7a2ole1ol2ole5a2ole1ol2ole5a2ol
+   e1a2ole7a1ol97a5ole25a5ole5a5ole5a5ole105a5ole25a5ole5a5ole5a5ole905a5ole25a5ole5a5ole5a5ole5a5ole95a5ole25a5ole5a5ole5a5ole5a5ole95a2ole1ol2ole7a1ol9a1
+   ol7a2ole1a2ole5a2ole1ol2ole5a2ole1a2ole5a2ole1a2ole95a5ole25a5ole5a5ole5a5ole5a5ole95a5ole25a5ole5a5ole5a5ole5a5ole895a5ole5a5ole5a5ole5a5ole5a5ole115a5
+   ole5a5ole5a5ole5a5ole5a5ole115a2ole1a2ole5a2ole1ol2ole5a2ole1a2ole5a2ole1ol2ole5a2ole1ol2ole115a5ole5a5ole5a5ole5a5ole5a5ole115a5ole5a5ole5a5ole5a5ole5a
+   5ole492a31sb129a31sb129a31sb72a5ole5a5ole15a5ole22a31sb72a5ole5a5ole15a5ole22a31sb72a2ole1a2ole5a2ole1ol2ole7a1ol7a2ole1ol2ole7a1ol14a31sb72a5ole5a5ole1
+   5a5ole22a31sb72a5ole5a5ole15a5ole22a31sb129a31sb129a31sb129a31sb129a31sb129a31sb129a31sb129a31sb129a31sb129a31sb129a31sb129a31sb129a31sb129a31sb129a31sb
+   129a31sb129a31sb129a31sb129a31sb129a31sb129a31sb129a31sb129a31sb129a31sb11592a5ole5a5ole5a5ole5a5ole5a5ole15a5ole95a5ole5a5ole5a5ole5a5ole5a5ole6a3ole6a
+   5ole95a2ole1a2ole5a2ole1ol2ole5a2ole1ol2ole5a2ole1a2ole5a2ole1a2ole6a3ole6a2ole1a2ole95a5ole5a5ole5a5ole5a5ole5a5ole6a3ole6a5ole95a5ole5a5ole5a5ole5a5ol
+   e5a5ole15a5ole895a5ole15a5ole5a5ole5a5ole5a5ole105a5ole6a3ole6a5ole5a5ole5a5ole5a5ole6a3ole96a2ole1ol2ole6a3ole6a2ole1a2ole5a2ole1a2ole5a2ole1a2ole5a2ol
+   e1ol2ole6a3ole96a5ole6a3ole6a5ole5a5ole5a5ole5a5ole6a3ole96a5ole15a5ole5a5ole5a5ole5a5ole905a5ole5a5ole5a5ole5a5ole5a5ole5a5ole5a5ole95a5ole5a5ole5a5ole
+   5a5ole5a5ole5a5ole5a5ole95a2ole1ol2ole5a2ole1a2ole5a2ole1ol2ole5a2ole1ol2ole5a2ole1a2ole5a2ole1ol2ole5a2ole1a2ole95a5ole5a5ole5a5ole5a5ole5a5ole5a5ole5a
+   5ole95a5ole5a5ole5a5ole5a5ole5a5ole5a5ole5a5ole905a5ole5a5ole5a5ole5a5ole15a5ole96a3ole6a5ole5a5ole5a5ole5a5ole6a3ole6a5ole96a3ole6a2ole1ol2ole5a2ole1ol
+   2ole5a2ole1a2ole5a2ole1a2ole6a3ole6a2ole1ol2ole96a3ole6a5ole5a5ole5a5ole5a5ole6a3ole6a5ole105a5ole5a5ole5a5ole5a5ole15a5ole895a5ole5a5ole5a5ole15a5ole11
+   5a5ole5a5ole5a5ole6a3ole6a5ole6a3ole7a3ole96a2ole1a2ole5a2ole1ol2ole5a2ole1ol2ole6a3ole6a2ole1a2ole6a3ole7a3ole96a5ole5a5ole5a5ole6a3ole6a5ole6a3ole7a3o
+   le96a5ole5a5ole5a5ole15a5ole925a5ole15a5ole5a5ole116a3ole6a5ole6a3ole6a5ole5a5ole116a3ole6a2ole1a2ole6a3ole6a2ole1a2ole5a2ole1a2ole116a3ole6a5ole6a3ole6
+   a5ole5a5ole125a5ole15a5ole5a5ole925a5ole5a5ole5a5ole5a5ole116a3ole6a5ole5a5ole5a5ole5a5ole116a3ole6a2ole1a2ole5a2ole1ol2ole5a2ole1a2ole5a2ole1ol2ole17a2
+   1sb78a3ole6a5ole5a5ole5a5ole5a5ole17a21sb87a5ole5a5ole5a5ole5a5ole17a21sb139a21sb139a21sb139a21sb139a21sb139a21sb139a21sb139a21sb139a21sb139a21sb139a21s
+   b139a21sb139a21sb139a21sb139a21sb139a21sb139a21sb139a21sb139a21sb12407a5ole5a5ole136a3ole6a5ole5a5ole6a3ole7a3ole17a3ole97a3ole6a2ole1a2ole5a2ole1a2ole6
+   a3ole7a3ole17a3ole97a3ole6a5ole5a5ole6a3ole7a3ole17a3ole106a5ole5a5ole935a5ole45a5ole105a5ole16a3ole7a3ole7a3ole6a5ole105a2ole1a2ole16a3ole7a3ole7a3ole6
+   a2ole1a2ole105a5ole16a3ole7a3ole7a3ole6a5ole105a5ole45a5ole905a5ole15a5ole5a5ole15a5ole105a5ole6a3ole6a5ole5a5ole6a3ole6a5ole6a3ole96a2ole1a2ole6a3ole6a
+   2ole1a2ole5a2ole1a2ole6a3ole6a2ole1a2ole6a3ole96a5ole6a3ole6a5ole5a5ole6a3ole6a5ole6a3ole96a5ole15a5ole5a5ole15a5ole915a5ole5a5ole35a5ole105a5ole5a5ole6
+   a3ole7a3ole16a5ole105a2ole1a2ole5a2ole1a2ole6a3ole7a3ole16a2ole1a2ole105a5ole5a5ole6a3ole7a3ole16a5ole105a5ole5a5ole35a5ole905a5ole5a5ole136a3ole6a5ole5
+   a5ole16a3ole117a3ole6a2ole1a2ole5a2ole1a2ole16a3ole117a3ole6a5ole5a5ole16a3ole126a5ole5a5ole1106a3ole17a3ole7a3ole127a3ole17a3ole7a3ole127a3ole17a3ole7a
+   3ole1096a5ole15a5ole126a3ole6a5ole6a3ole6a5ole126a3ole6a2ole1a2ole6a3ole6a2ole1a2ole126a3ole6a5ole6a3ole6a5ole135a5ole15a5ole15486a3ole7a3ole147a3ole7a3
+   ole147a3ole7a3ole1257a3ole47a3ole107a3ole47a3ole107a3ole47a3ole1227a3ole17a3ole7a3ole17a3ole107a3ole17a3ole7a3ole17a3ole107a3ole17a3ole7a3ole17a3ole1237
+   a3ole7a3ole37a3ole107a3ole7a3ole37a3ole107a3ole7a3ole37a3ole1227a3ole7a3ole147a3ole7a3ole147a3ole7a3ole2877a3ole17a3ole137a3ole17a3ole137a3ole17a3ole121
+   7388a
+` // demo world that shocases all available blocks
 
 // function to help with radians
 function degToRad(degrees) {
     var radians = degrees * (Math.PI / 180);
     return radians;
+}
+
+function randomInt(min,max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
   
 function copy2DArray(array) {
@@ -40,6 +108,106 @@ function debugWorld(worldArray) {
     }
 }
 
+function placeTree(x,y,z,type) {
+    x = parseInt(x);
+    y = parseInt(y);
+    z = parseInt(z);
+    let logs = [];
+    let leaves = [];
+    if (type == "oak") {
+        let variation = randomInt(5,7);
+        switch (variation) {
+            case 5: 
+                logs = [[0,0,0],[0,1,0],[0,2,0],[0,3,0],[0,4,0]];
+                leaves = [
+                    [-1,6,-1],[-1,6,0],[-1,6,1],
+                    [0,6,-1], [0,6,0], [0,6,1],
+                    [1,6,-1], [1,6,0], [1,6,1],
+                
+                    [-2,5,-2],[-2,5,-1], [-2,5,0],[-2,5,1],[-2,5,2],
+                    [-1,5,-2],[-1,5,-1],[-1,5,0],[-1,5,1],[-1,5,2],
+                    [0,5,-2], [0,5,-1],          [0,5,1], [0,5,2],
+                    [1,5,-2], [1,5,-1], [1,5,0], [1,5,1], [1,5,2],
+                    [2,5,-2], [2,5,-1], [2,5,0], [2,5,1], [2,5,2],
+                
+                    [-2,4,-2],[-2,4,-1], [-2,4,0],[-2,4,1],[-2,4,2],
+                    [-1,4,-2],[-1,4,-1],[-1,4,0],[-1,4,1],[-1,4,2],
+                    [0,4,-2], [0,4,-1],          [0,4,1], [0,4,2],
+                    [1,4,-2], [1,4,-1], [1,4,0], [1,4,1], [1,4,2],
+                    [2,4,-2], [2,4,-1], [2,4,0], [2,4,1], [2,4,2],
+                ];
+                break;
+            case 6: 
+                logs = [[0,0,0],[0,1,0],[0,2,0],[0,3,0],[0,4,0],[0,5,0]];
+                leaves = [
+                    [-1,7,-1],[-1,7,0],[-1,7,1],
+                    [0,7,-1], [0,7,0], [0,7,1],
+                    [1,7,-1], [1,7,0], [1,7,1],
+                
+                    [-2,6,-2],[-2,6,-1], [-2,6,0],[-2,6,1],[-2,6,2],
+                    [-1,6,-2],[-1,6,-1],[-1,6,0],[-1,6,1],[-1,6,2],
+                    [0,6,-2], [0,6,-1],          [0,6,1], [0,6,2],
+                    [1,6,-2], [1,6,-1], [1,6,0], [1,6,1], [1,6,2],
+                    [2,6,-2], [2,6,-1], [2,6,0], [2,6,1], [2,6,2],
+                
+                    [-2,5,-2],[-2,5,-1], [-2,5,0],[-2,5,1],[-2,5,2],
+                    [-1,5,-2],[-1,5,-1],[-1,5,0],[-1,5,1],[-1,5,2],
+                    [0,5,-2], [0,5,-1],          [0,5,1], [0,5,2],
+                    [1,5,-2], [1,5,-1], [1,5,0], [1,5,1], [1,5,2],
+                    [2,5,-2], [2,5,-1], [2,5,0], [2,5,1], [2,5,2],
+                ];
+                break;
+            case 7: 
+                logs = [[0,0,0],[0,1,0],[0,2,0],[0,3,0],[0,4,0],[0,5,0],[0,6,0]];
+                leaves = [
+                    [-1,8,-1],[-1,8,0],[-1,8,1],
+                    [0,8,-1], [0,8,0], [0,8,1],
+                    [1,8,-1], [1,8,0], [1,8,1],
+                
+                    [-2,7,-2],[-2,7,-1], [-2,7,0],[-2,7,1],[-2,7,2],
+                    [-1,7,-2],[-1,7,-1],[-1,7,0],[-1,7,1],[-1,7,2],
+                    [0,7,-2], [0,7,-1],          [0,7,1], [0,7,2],
+                    [1,7,-2], [1,7,-1], [1,7,0], [1,7,1], [1,7,2],
+                    [2,7,-2], [2,7,-1], [2,7,0], [2,7,1], [2,7,2],
+                
+                    [-2,6,-2],[-2,6,-1], [-2,6,0],[-2,6,1],[-2,6,2],
+                    [-1,6,-2],[-1,6,-1],[-1,6,0],[-1,6,1],[-1,6,2],
+                    [0,6,-2], [0,6,-1],          [0,6,1], [0,6,2],
+                    [1,6,-2], [1,6,-1], [1,6,0], [1,6,1], [1,6,2],
+                    [2,6,-2], [2,6,-1], [2,6,0], [2,6,1], [2,6,2],
+                ];
+                break;
+        }
+        for (let i = 0; i < logs.length; i++) {
+            world[x+logs[i][0]][y+logs[i][1]][z+logs[i][2]] = "ol";    
+        }
+        for (let i = 0; i < leaves.length; i++) {
+            world[x+leaves[i][0]][y+leaves[i][1]][z+leaves[i][2]] = "ole";
+        }
+    } else {
+        console.error("invalid tree type: " + type);
+    }
+    for (let i = Math.floor(y/16); i < Math.round(maxHeight/16); i++) {
+        loadChunk(Math.floor(x/16),i,Math.floor(z/16));
+    }
+    loadChunk(Math.floor(x/16)-1,Math.floor(y/16),Math.floor(z/16)-1);
+    loadChunk(Math.floor(x/16)-1,Math.floor(y/16),Math.floor(z/16));
+    loadChunk(Math.floor(x/16)-1,Math.floor(y/16),Math.floor(z/16)+1);
+    loadChunk(Math.floor(x/16),Math.floor(y/16),Math.floor(z/16)-1);
+    loadChunk(Math.floor(x/16),Math.floor(y/16),Math.floor(z/16)+1);
+    loadChunk(Math.floor(x/16)+1,Math.floor(y/16),Math.floor(z/16)-1);
+    loadChunk(Math.floor(x/16)+1,Math.floor(y/16),Math.floor(z/16));
+    loadChunk(Math.floor(x/16)+1,Math.floor(y/16),Math.floor(z/16)+1);
+    loadChunk(Math.floor(x/16)-1,Math.floor(y/16)+1,Math.floor(z/16)-1);
+    loadChunk(Math.floor(x/16)-1,Math.floor(y/16)+1,Math.floor(z/16));
+    loadChunk(Math.floor(x/16)-1,Math.floor(y/16)+1,Math.floor(z/16)+1);
+    loadChunk(Math.floor(x/16),Math.floor(y/16)+1,Math.floor(z/16)-1);
+    loadChunk(Math.floor(x/16),Math.floor(y/16)+1,Math.floor(z/16)+1);
+    loadChunk(Math.floor(x/16)+1,Math.floor(y/16)+1,Math.floor(z/16)-1);
+    loadChunk(Math.floor(x/16)+1,Math.floor(y/16)+1,Math.floor(z/16));
+    loadChunk(Math.floor(x/16)+1,Math.floor(y/16)+1,Math.floor(z/16)+1);
+}
+
 const blocks = {
     "a": "air",
     "s": "stone",
@@ -47,7 +215,9 @@ const blocks = {
     "b": "bedrock",
     "g": "grass",
     "ol": "oak_log",
+    "ole": "oak_leaves",
     "gl": "glass",
+    "sb": "stone_brick",
 }
 const blockKeys = {
     "air": "a",
@@ -56,11 +226,18 @@ const blockKeys = {
     "bedrock": "b",
     "grass": "g",
     "oak_log": "ol",
+    "oak_leaves": "ole",
     "glass": "gl",
+    "stone_brick": "sb",
 }
+const transparentBlocks = [
+    "gl",
+    "a",
+]
 
 // loading blocks into a 3d array
 function decodeWorldCode(input) {
+    input = input.replace(/\s/g, '');
     let world = new Array(worldSize).fill().map(() => new Array(maxHeight).fill().map(() => new Array(worldSize).fill(0)));
     let x = 0;
     let y = 0;
@@ -75,8 +252,12 @@ function decodeWorldCode(input) {
         let blockType = null; 
         if (isDigit(input[numberEnd+1])) {
             blockType = input.charAt(numberEnd);
-        } else {
+        } else if (isDigit(input[numberEnd+2])) {
             blockType = input.charAt(numberEnd) + input.charAt(numberEnd+1);
+            numberEnd++;
+        }
+        else {
+            blockType = input.charAt(numberEnd) + input.charAt(numberEnd+1) + input.charAt(numberEnd+2);
             numberEnd++;
         }
         for (let n = 0; n < count; n++) {
@@ -178,11 +359,29 @@ function runCommand(command) {
         commandLineInput.value = `save code: ${saveCode}`;
     } else if (operation == "load") {
         let loadCode = command.substring(commandIndex + 1);
+        if (loadCode == "demo") {
+            loadCode = demoWorld;
+        } else if (loadCode == "flat") {
+            loadCode = flatWorld;
+        }
         world = decodeWorldCode(loadCode);
         enterWorld();
     } else if (operation == "debug") {
         debugWorld(world);
-    }else {
+    } else if (operation == "tree") {
+        let i = commandIndex + 2;
+        let type = "";
+        const x = getNumber(command, i)[0];
+        i = getNumber(command, i)[1]+1;
+        const y = getNumber(command, i)[0];
+        i = getNumber(command, i)[1]+1;
+        const z = getNumber(command, i)[0];
+        i = getNumber(command, i)[1]+1;
+        for (let j = i; j < command.length; j++) {
+            type += command[j];
+        }
+        placeTree(x,y,z,type);
+    } else {
         console.error(`operation '${operation}' does not exist`);
     }
 }
@@ -424,6 +623,7 @@ let chunkMeshes = new Array(worldSize / 16).fill().map(() => new Array(maxHeight
 const textures = {
     "dirt": new THREE.MeshStandardMaterial({map: textureLoader.load("textures/dirt/all.webp")}),
     "stone": new THREE.MeshStandardMaterial({map: textureLoader.load("textures/stone/all.webp")}),
+    "stone_brick": new THREE.MeshStandardMaterial({map: textureLoader.load("textures/stone_brick/all.webp")}),
     "bedrock": new THREE.MeshStandardMaterial({map: textureLoader.load("textures/bedrock/all.webp")}),
     "grass": [
         new THREE.MeshStandardMaterial({
@@ -465,7 +665,18 @@ const textures = {
             map: textureLoader.load("textures/oak_log/sides.webp")
         }),
     ],
-    glass: new THREE.MeshStandardMaterial({map: textureLoader.load("textures/glass/all.webp")}),
+    "oak_leaves": new THREE.MeshStandardMaterial({
+        map: textureLoader.load("textures/oak_leaves/all.webp", function(texture) {
+            texture.format = THREE.RGBAFormat;
+        }),
+        transparent: true
+    }),
+    "glass": new THREE.MeshStandardMaterial({
+        map: textureLoader.load("textures/glass/all.webp", function(texture) {
+            texture.format = THREE.RGBAFormat;
+        }),
+        transparent: true
+    }),
 }
 
 function loadChunk(chunkX, chunkY, chunkZ) {
@@ -480,7 +691,7 @@ function loadChunk(chunkX, chunkY, chunkZ) {
             for (let z = chunkZ * 16; z < (chunkZ * 16) + 16; z++) {
                 if (world[x][y][z] != "a") {
                     if (y < maxHeight-1) {
-                        if (world[x][y+1][z] == "a") { // add plane above
+                        if (transparentBlocks.includes(world[x][y+1][z])) { // add plane above
                             currentWorldBlocks.push([x,y,z,world[x][y][z]]);
                             continue;
                         }
@@ -489,7 +700,7 @@ function loadChunk(chunkX, chunkY, chunkZ) {
                         continue;
                     }
                     if (y > 0) {
-                        if (world[x][y-1][z] == "a") { // add bottom plane
+                        if (transparentBlocks.includes(world[x][y-1][z])) { // add bottom plane
                             currentWorldBlocks.push([x,y,z,world[x][y][z]]);
                             continue;
                         }
@@ -498,7 +709,7 @@ function loadChunk(chunkX, chunkY, chunkZ) {
                         continue;
                     }
                     if (x < worldSize-1) {
-                        if (world[x+1][y][z] == "a") { // add side plane x+1
+                        if (transparentBlocks.includes(world[x+1][y][z])) { // add side plane x+1
                             currentWorldBlocks.push([x,y,z,world[x][y][z]]);
                             continue;
                         }
@@ -507,7 +718,7 @@ function loadChunk(chunkX, chunkY, chunkZ) {
                         continue;
                     }
                     if (x > 0) {
-                        if (world[x-1][y][z] == "a") { // add side plane x-1
+                        if (transparentBlocks.includes(world[x-1][y][z])) { // add side plane x-1
                             currentWorldBlocks.push([x,y,z,world[x][y][z]]);
                             continue;
                         }
@@ -516,7 +727,7 @@ function loadChunk(chunkX, chunkY, chunkZ) {
                         continue;
                     }
                     if (z < worldSize-1) {
-                        if (world[x][y][z+1] == "a") { // add side plane z+1
+                        if (transparentBlocks.includes(world[x][y][z+1])) { // add side plane z+1
                             currentWorldBlocks.push([x,y,z,world[x][y][z]]);
                             continue;
                         }
@@ -525,7 +736,7 @@ function loadChunk(chunkX, chunkY, chunkZ) {
                         continue;
                     }
                     if (z > 0) {
-                        if (world[x][y][z-1] == "a") { // add side plane z-1
+                        if (transparentBlocks.includes(world[x][y][z-1])) { // add side plane z-1
                             currentWorldBlocks.push([x,y,z,world[x][y][z]]);
                             continue;
                         }
