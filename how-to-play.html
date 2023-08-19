@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Play Chess</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            color: #ffffff;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-image: linear-gradient(to right bottom, #6199ec, #6e90d2, #7488b8, #77809f, #767987);
+            line-height: 1.6;
+        }
+        header {
+            text-align: center;
+            padding: 1.5rem 0;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 0 1.5rem;
+            overflow: hidden;
+        }
+        h1, h2, h3 {
+            margin-bottom: 1.5rem;
+            color: #bbbbbb;
+        }
+        p {
+            margin-bottom: 1.5rem;
+        }
+        a {
+            text-decoration: none;
+        }
+        .buttonClass {
+            padding-left: 1.8rem;
+            padding-top: 0.5rem;
+            position: fixed;
+            top: 0px;
+            left: -5px;
+            font-size:15px;
+            font-family:Arial;
+            width:12rem;
+            height:2.5rem;
+            border-width:1px;
+            color:#fff;
+            border-color:rgba(146, 151, 151, 1);
+            font-weight:bold;
+            border-top-left-radius:8px;
+            border-top-right-radius:8px;
+            border-bottom-left-radius:8px;
+            border-bottom-right-radius:8px;
+            box-shadow: 0px 10px 14px -7px rgba(99, 100, 100, 1);
+            text-shadow: 0px 1px 0px rgba(85, 87, 87, 1);
+            background:linear-gradient(rgba(156, 156, 156, 1), rgba(77, 77, 77, 1));
+        }
+        .buttonClass:hover {
+            background: linear-gradient(rgba(77, 77, 77, 1), rgba(156, 156, 156, 1));
+        }  
+        ul {
+            margin-bottom: 1.5rem;
+            list-style-type: none;
+        }
+        li {
+            margin-bottom: 1rem;
+        }
+        @media screen and (min-width: 768px) {
+            .flex-container {
+                display: flex;
+                justify-content: space-between;
+            }
+            .flex-container > div {
+                width: 48%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <p><a href="https://carterross.dev/blocks" class="buttonClass">← back to game</a></p>
+    <header>
+        <h1>How to Play</h1>
+    </header>
+
+    <section class="container">
+        <h2>Controls</h2>
+            <p>
+                * drag the screen with the left mouse to rotate<br>
+                * zoom in and out using the scroll wheel
+            </p>
+
+        <h2>Commands</h2>
+            <h3>fill command</h3>
+                <p>fill:(x1, y1, z1, x2, y2, z2, block)</p>
+            <h3>save command</h3>
+                <p>save (for now world save code will log to console)</p>
+            <h3>Load command</h3>
+                <p>load:`enter worlds save code here`</p>
+                <p>
+                    world save code is generated when you save the world and does
+                    not have qoutation marks around when enetering into world load command
+                </p>
+            <h3>Place tree command</h3>
+                <p>tree:(x,y,z,type)</p>
+                <p>
+                    * only oak trees available now<br>
+                    * generated trees are randomly given differnt shape
+                </p>
+    </section>
+</body>
+</html>    
